@@ -10,10 +10,6 @@
       --section-bg: #ffffff; --btn-bg: #e9ecef; --btn-hover-bg: #dee2e6;
       --accent-btn-bg: #228be6; --accent-btn-hover-bg: #1c7ed6;
     }
-    body.dark {
-      --bg-color: #121212; --text-color: #e9ecef; --border-color: #343a40;
-      --section-bg: #1e1e1e; --btn-bg: #343a40; --btn-hover-bg: #495057;
-    }
     body {
       font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0; padding: 20px;
@@ -115,7 +111,7 @@
 <body>
   <div class="header-controls">
     <button id="main-link" title="돌아가기">🍞️</button>
-    <button id="toggleDarkBtn" title="다크모드">🌗</button>
+    <button id="wash-link" title="세탁소 모음">🫧</button>
   </div>
   <div class="container">
     <h1>🧼 짧은 그림 세탁소</h1>
@@ -209,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const positionGrid = document.getElementById('watermark-position');
     const downloadWashBtn = document.getElementById('wash-btn');
     const downloadRepairBtn = document.getElementById('repair-btn');
-    const toggleDarkBtn = document.getElementById('toggleDarkBtn');
+    const washLinkBtn = document.getElementById('wash-link');
     const changeImageBtn = document.getElementById('change-image-btn');
     const mainLinkBtn = document.getElementById('main-link');
 
     let originalFile = null;
     let imageAspectRatio = 1;
     let isAspectLocked = true;
-    const defaultWatermarkText = "🦦AI채팅 리수 달글 (수달)🦦";
+    const defaultWatermarkText = "리달";
     let previewCanvas = null;
     let settings = { text: defaultWatermarkText, position: 'center', size: 30, opacity: 15, spacing: 150 };
 
@@ -434,9 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadWashBtn.addEventListener('click', () => processImage(false));
     downloadRepairBtn.addEventListener('click', () => processImage(true));
     
-    toggleDarkBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('cleaner_darkmode', document.body.classList.contains('dark'));
+    washLinkBtn.addEventListener('click', () => {
+        window.location.href = "https://toastout.github.io/wash/";
     });
 
     mainLinkBtn.addEventListener('click', () => {
@@ -444,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // --- Initial Load ---
-    if (localStorage.getItem('cleaner_darkmode') === 'true') document.body.classList.add('dark');
     
     const savedSettings = localStorage.getItem('cleaner_settings');
     if (savedSettings) {
@@ -488,5 +482,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-
