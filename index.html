@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     previewCanvas.width = width * dpr;
                     previewCanvas.height = height * dpr;
                     const ctx = previewCanvas.getContext('2d');
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
                     ctx.scale(dpr, dpr);
                     updatePreview();
                 }
@@ -290,7 +291,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `bold ${dynamicFontSize}px "Pretendard", sans-serif`;
     
         if (settings.position === 'pattern') {
-            const dynamicSpacing = (settings.spacing / 1024) * width;
+            const safeSpacing = Math.max(1, Number(settings.spacing) || 150);
+            const dynamicSpacing = Math.max(1, (safeSpacing / 1024) * width);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.save();
@@ -299,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const textWidth = ctx.measureText(settings.text).width;
             const effectiveSpacingX = Math.max(textWidth, dynamicSpacing * 1.8);
-            const effectiveSpacingY = dynamicSpacing;
+            const effectiveSpacingY = Math.max(1, dynamicSpacing);
             
             const startX = -width; const startY = -height;
             const endX = width * 2; const endY = height * 2;
@@ -356,6 +358,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 'image/jpeg', 0.95);
         };
         img.src = URL.createObjectURL(originalFile);
+    }
+
+    function normalizeSettings(nextSettings) {
+        const normalized = { ...settings, ...nextSettings };
+        normalized.size = Math.min(200, Math.max(10, Number(normalized.size) || 30));
+        normalized.opacity = Math.min(100, Math.max(0, Number(normalized.opacity) || 15));
+        normalized.spacing = Math.min(500, Math.max(50, Number(normalized.spacing) || 150));
+        if (typeof normalized.text !== 'string') normalized.text = defaultWatermarkText;
+        if (!document.querySelector(`[data-position="${normalized.position}"]`)) {
+            normalized.position = 'center';
+        }
+        return normalized;
     }
     
     function setupSteppers() {
@@ -445,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const parsedSettings = JSON.parse(savedSettings);
             if (parsedSettings && typeof parsedSettings === 'object') {
-                 settings = { ...settings, ...parsedSettings };
+                 settings = normalizeSettings(parsedSettings);
             }
         } catch (e) {
             console.error("저장된 설정을 불러오는 데 실패했습니다:", e);
